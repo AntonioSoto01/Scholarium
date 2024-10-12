@@ -1,0 +1,29 @@
+# Python
+*.py[cod]
+__pycache__/
+*.pyo
+*.pyd
+.Python
+/.venv 
+*.egg-info/
+*.egg
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.db
+*.sqlite3
+/static/
+media/
+
+# Editor folders
+.idea/
+.vscode/
+*.swp
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
