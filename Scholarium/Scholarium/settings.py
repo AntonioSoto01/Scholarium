@@ -39,7 +39,39 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'scholarium_main',
     'rest_framework',
+    'polymorphic',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.headless',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
+#-----------------------------------
+AUTH_USER_MODEL = 'scholarium_main.PersonUser'
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+ACCOUNT_AUTHENTICATION_METHOD='username_email'
+
+#The deafualt values is 'optional' wich means it sends an email but the user can still log in without verifying the email
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_REQUIRED = True
+
+# HEADLESS_ONLY  = True
+
+# Defaul value is accounts/profile
+LOGIN_REDIRECT_URL = '/'
+
+ACCOUNT_ADAPTER = 'scholarium_main.adapters.RestrictedAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'scholarium_main.adapters.RestrictedSocialAccountAdapter'
+
+#-----------------------------------
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,6 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'Scholarium.urls'
@@ -76,18 +109,28 @@ WSGI_APPLICATION = 'Scholarium.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'sqlite': {
+    'default': {
+    # 'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'default': {
+    # 'default': {
+    'postgresql':{
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'Scholarium',
+        'USER': 'Scholarium',
+        'PASSWORD': 'Scholarium',
+        'HOST': 'localhost', 
+        'PORT': '5432',  
+    },
+    'mysql': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'scholarium',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': 'localhost',  # o la dirección IP de tu servidor MySQL
-        'PORT': '3306',  # El puerto por defecto de MySQL
-    }    
+        'HOST': 'localhost', 
+        'PORT': '3306',  
+    }
 }
 
 

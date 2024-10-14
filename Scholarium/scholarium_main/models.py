@@ -1,5 +1,7 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 class Center(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
@@ -9,7 +11,7 @@ class Center(models.Model):
 
 class Group(models.Model):
     center = models.ForeignKey(Center, on_delete=models.CASCADE)
-    school_year = models.CharField(max_length=9)  # e.g., "2023-2024"
+    school_year = models.CharField(max_length=9) 
     course_number = models.CharField(max_length=10)
     letter = models.CharField(max_length=1)
 
@@ -19,7 +21,7 @@ class Group(models.Model):
 class Person(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    # email = models.EmailField(unique=True)
     date_of_birth = models.DateField()
 
     class Meta:
@@ -30,7 +32,7 @@ class Person(models.Model):
 
 class Student(Person):
     enrollment_number = models.CharField(max_length=20, unique=True)
-    course = models.CharField(max_length=50)
+    # course = models.CharField(max_length=50)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
 class Teacher(Person):
@@ -112,3 +114,11 @@ class Grade(models.Model):
 
     def __str__(self):
         return f"{self.student} - {self.subject.name} - {self.evaluation.name} - {self.grade}"
+    
+#Workaround for the foreign key for abstract class problem 
+class PersonUser(AbstractUser):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    person = GenericForeignKey('content_type', 'object_id')
+    def __str__(self):
+        return self.username
