@@ -317,6 +317,6 @@ class PersonUserViewSet(PersonMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        person= self.get_person()
+        person = self.get_person()
         if isinstance(person, SuperAdmin) or self.request.user.is_superuser:
             serializer.save()
