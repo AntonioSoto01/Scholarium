@@ -7,16 +7,21 @@ from .models import Attendance, Center, CenterAdmin, Evaluation, Grade, Group, P
 from .serializers import AttendanceSerializer, CenterAdminSerializer, CenterSerializer, EvaluationSerializer, GradeSerializer, GroupSerializer, PersonUserSerializer, ScheduleSerializer, StudentSerializer, SubjectSerializer, SuperAdminSerializer, TeacherSerializer
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
-from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
-class CenterViewSet(viewsets.ModelViewSet):
-    queryset = Center.objects.all()
-    serializer_class = CenterSerializer
-    permission_classes = [IsAuthenticated]
+
+
+class PersonMixin:
+    """Mixin that provides the get_person method to ViewSets."""
 
     def get_person(self):
         return getattr(self.request.user, 'person', None)
+
+
+class CenterViewSet(PersonMixin, viewsets.ModelViewSet):
+    queryset = Center.objects.all()
+    serializer_class = CenterSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         person = self.get_person()
@@ -56,13 +61,10 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticated]
     
-class StudentViewSet(viewsets.ModelViewSet):
+class StudentViewSet(PersonMixin, viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_person(self):
-        return getattr(self.request.user, 'person', None)
 
     def get_queryset(self):
         person = self.get_person()
@@ -105,13 +107,10 @@ class StudentViewSet(viewsets.ModelViewSet):
         else:
             raise PermissionDenied("No tienes permiso para eliminar este alumno.")
 
-class TeacherViewSet(viewsets.ModelViewSet):
+class TeacherViewSet(PersonMixin, viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_person(self):
-        return getattr(self.request.user, 'person', None)
 
     def get_queryset(self):
         person = self.get_person()
@@ -152,13 +151,10 @@ class TeacherViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("No tienes permiso para eliminar este profesor.")
 
 
-class CenterAdminViewSet(viewsets.ModelViewSet):
+class CenterAdminViewSet(PersonMixin, viewsets.ModelViewSet):
     queryset = CenterAdmin.objects.all()
     serializer_class = CenterAdminSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_person(self):
-        return getattr(self.request.user, 'person', None)
 
     def get_queryset(self):
         person = self.get_person()
@@ -192,13 +188,10 @@ class CenterAdminViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("No tienes permiso para eliminar este administrador de centro.")
 
 
-class SuperAdminViewSet(viewsets.ModelViewSet):
+class SuperAdminViewSet(PersonMixin, viewsets.ModelViewSet):
     queryset = SuperAdmin.objects.all()
     serializer_class = SuperAdminSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_person(self):
-        return getattr(self.request.user, 'person', None)
 
     def get_queryset(self):
         return SuperAdmin.objects.all()
@@ -226,13 +219,10 @@ class SuperAdminViewSet(viewsets.ModelViewSet):
 
 
 
-class SubjectViewSet(viewsets.ModelViewSet):
+class SubjectViewSet(PersonMixin, viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_person(self):
-        return getattr(self.request.user, 'person', None)
 
     def get_queryset(self):
         person = self.get_person()
@@ -268,13 +258,10 @@ class SubjectViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("No tienes permiso para eliminar esta asignatura.")
 
 
-class ScheduleViewSet(viewsets.ModelViewSet):
+class ScheduleViewSet(PersonMixin, viewsets.ModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_person(self):
-        return getattr(self.request.user, 'person', None)
 
     def get_queryset(self):
         person = self.get_person()
@@ -324,12 +311,10 @@ class GradeViewSet(viewsets.ModelViewSet):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated]
-class PersonUserViewSet(viewsets.ModelViewSet):
+class PersonUserViewSet(PersonMixin, viewsets.ModelViewSet):
     queryset = PersonUser.objects.all()
     serializer_class = PersonUserSerializer
     permission_classes = [IsAuthenticated]
-    def get_person(self):
-        return getattr(self.request.user, 'person', None)
 
     def perform_create(self, serializer):
         person= self.get_person()
